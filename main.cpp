@@ -1,50 +1,61 @@
-const int IN_SDR = 2;  // sensor infra digital direito
-const int IN_SDL = 3;  // sensor infra digital esquerdo
+const int SDIR = 8;
+const int SESQ = 9;
 
-const int MD1 = 4;  // entrada motor direito 1
-const int MD2 = 5;  // entrada motor direito 2
+const int MD_POS = 2;
+const int MD_NEG = 3;
 
-const int ME1 = 6;  // entrada motor esquerdo 1
-const int ME2 = 7;  // entrada motor esquerdo 2
+const int ME_POS = 4;
+const int ME_NEG = 5;
+
+const int velocidade = 120;
+
+bool SDIR_ATIVO;
+bool SESQ_ATIVO;
 
 void setup() {
   Serial.begin(9600);
-  pinMode(IN_SDR, INPUT);
-  pinMode(IN_SDL, INPUT);
 
-  pinMode(MD1, OUTPUT);
-  pinMode(MD2, OUTPUT);
-  pinMode(ME2, OUTPUT);
-  pinMode(ME2, OUTPUT);
+  pinMode(SDIR, INPUT);
+  pinMode(SESQ, INPUT);
+
+  pinMode(MD_POS, OUTPUT);
+  pinMode(MD_NEG, OUTPUT);
+  pinMode(ME_POS, OUTPUT);
+  pinMode(ME_NEG, OUTPUT);
 }
-
-// variaveis de entrada
-bool rIsBlack;
-bool lIsBlack;
 
 void loop() {
-  rIsBlack = digitalRead(IN_SDR);
-  lIsBlack = digitalRead(IN_SDL);
+  // direita_frente();
+  // esquerda_frente();
 
-  if (rIsBlack) {
-    Serial.println("Identificou preto no direito");
-  }
+  SDIR_ATIVO = digitalRead(SDIR);
+  SESQ_ATIVO = digitalRead(SESQ);
 
-  if (lIsBlack) {
-    Serial.println("Identificou preto na esquerda");
-  }
+  Serial.print("SENSOR DIREITO = ");
+  Serial.println(SDIR_ATIVO);
+  Serial.print("SENSOR ESQUERDO = ");
+  Serial.println(SESQ_ATIVO);
 
-  delay(500);
+  // if (SDIR_ATIVO) {
+  //   Serial.println("Identificou preto no direito");
+  // }
+
+  // if (SESQ_ATIVO) {
+  //   Serial.println("Identificou preto na esquerda");
+  // }
+
+  Serial.println("");
+  Serial.println("");
+  
+  delay(1000);
 }
 
-// TESTART SE O MOTOR DA DIREITA RODA PRA FRENTE
-void motor_direita_frente() {
-  digitalWrite(MD1, LOW);
-  digitalWrite(MD2, HIGH);
+void direita_frente() {
+  analogWrite(MD_NEG, velocidade);
+  analogWrite(MD_POS, 0);
 }
 
-// TESTAR SE O MOTOR DA ESQUERDA RODA PRA FRENTE
-void motor_esquerda_frente() {
-  digitalWrite(ME1, LOW);
-  digitalWrite(ME2, HIGH);
+void esquerda_frente() {
+  analogWrite(ME_NEG, velocidade);
+  analogWrite(ME_POS, 0);
 }
