@@ -7,10 +7,13 @@ const int MD_NEG = 3;
 const int ME_POS = 4;
 const int ME_NEG = 5;
 
-const int velocidade = 120;
+const int ECHO = 10;
+const int TRIGGER = 11;
 
 bool SDIR_ATIVO;
 bool SESQ_ATIVO;
+
+int DIST_CM;
 
 void setup() {
   Serial.begin(9600);
@@ -25,9 +28,6 @@ void setup() {
 }
 
 void loop() {
-  // direita_frente();
-  // esquerda_frente();
-
   SDIR_ATIVO = digitalRead(SDIR);
   SESQ_ATIVO = digitalRead(SESQ);
 
@@ -35,27 +35,76 @@ void loop() {
   Serial.println(SDIR_ATIVO);
   Serial.print("SENSOR ESQUERDO = ");
   Serial.println(SESQ_ATIVO);
-
-  // if (SDIR_ATIVO) {
-  //   Serial.println("Identificou preto no direito");
-  // }
-
-  // if (SESQ_ATIVO) {
-  //   Serial.println("Identificou preto na esquerda");
-  // }
-
+  Serial.print("SENSOR FRENTE = ");
+  DIST_CM = letDistanciaCm(TRIGGER, ECHO);
+  Serial.println(DIST_CM);
   Serial.println("");
-  Serial.println("");
-  
-  delay(1000);
+
+  if (DIST_CM < 6) {
+    esquerda_para();
+    direita_para();
+  } else if (SDIR_ATIVO && SESQ_ATIVO) {
+    esquerda_para();
+    direita_para();
+  } else if (!SDIR_ATIVO && !SESQ_ATIVO) {
+    esquerda_move();
+    direita_move();
+  } else if (SDIR_ATIVO) {
+    esquerda_para();
+    direita_move();
+  } else if (SESQ_ATIVO) {
+    esquerda_move();
+    direita_para();
+  }
 }
 
-void direita_frente() {
-  analogWrite(MD_NEG, velocidade);
+int letDistanciaCm(int triggerPin, int echoPin) {
+  pinMode(triggerPin, OUTPUT);
+  digitalWrite(triggerPin, LOW);
+  delayMicroseconds(2);
+  digitalWrite(triggerPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(triggerPin, LOW);
+  pinMode(echoPin, INPUT);
+  return 0.01723 * pulseIn(echoPin, HIGH);
+}
+
+// void direita_move() {
+//   digitalWrite(MD_NEG, HIGH);
+//   digitalWrite(MD_POS, LOW);
+// }
+
+// void direita_para() {
+//   digitalWrite(MD_NEG, HIGH);
+//   digitalWrite(MD_POS, HIGH);
+// }
+
+// void esquerda_move() {
+//   digitalWrite(ME_NEG, HIGH);
+//   digitalWrite(ME_POS, LOW);
+// }
+
+// void esquerda_para() {
+//   digitalWrite(ME_NEG, HIGH);
+//   digitalWrite(ME_POS, HIGH);
+// }
+
+void direita_move() {
+  analogWrite(MD_NEG, 140);
   analogWrite(MD_POS, 0);
 }
 
-void esquerda_frente() {
-  analogWrite(ME_NEG, velocidade);
+void direita_para() {
+  analogWrite(MD_NEG, 0);
+  analogWrite(MD_POS, 0);
+}
+
+void esquerda_move() {
+  analogWrite(ME_NEG, 140);
+  analogWrite(ME_POS, 0);
+}
+
+void esquerda_para() {
+  analogWrite(ME_NEG, 0);
   analogWrite(ME_POS, 0);
 }
